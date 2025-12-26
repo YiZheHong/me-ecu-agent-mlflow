@@ -1,14 +1,14 @@
 # ECU Agent MLflow Management System
 
-> Built on top of [me-ecu-agent](https://github.com/YiZheHong/me-ecu-agent)
+> **Built on**: [me-ecu-agent](https://github.com/YiZheHong/me-ecu-agent) - Core RAG engine for ECU documentation
 
-An integrated RAG (Retrieval-Augmented Generation) lifecycle management system for ECU (Electronic Control Unit) documentation. Uses MLflow for experiment tracking and FastAPI for training, registering, and serving models.
+MLflow-based lifecycle management for ECU documentation RAG models. Train, register, and serve models through simple FastAPI endpoints.
 
 ## Quick Start
 
 ### 1. Setup Environment
 
-Create a `.env` file in the root directory:
+Create `.env` file:
 
 ```env
 DEEPSEEK_API_KEY=your_api_key_here
@@ -21,49 +21,114 @@ DEEPSEEK_API_BASE=https://api.deepseek.com
 docker compose -f docker/docker-compose.yml up --build
 ```
 
-**Services:**
+**Access:**
 - MLflow UI: http://localhost:5000
-- API Service: http://localhost:8000
+- API: http://localhost:8000/docs
 
-## Usage
+## Workflow
 
-Access the Swagger UI at http://localhost:8000/docs
+### Step 1: Train
 
-### Step 1: Train Model
+**POST /train** - Run grid search to find best parameters
 
-Click **POST /train** → Execute
-
-This runs grid search to find optimal RAG parameters. Returns run IDs with their pass rates.
-
-### Step 2: Register Best Model
-
-Click **POST /register** → Enter the best `run_id` from training → Execute
-
-Example request body:
+Returns run IDs with pass rates:
 ```json
 {
-  "run_id": "3b2a80bc62894e72aca80dcc49f3acac",
+  "status": "success",
+  "results": [
+    {
+      "run_id": "3b2a80bc...",
+      "pass_rate": 0.95
+    }
+  ]
+}
+```
+
+### Step 2: Register
+
+**POST /register** - Register best model to production
+
+```json
+{
+  "run_id": "3b2a80bc...",
   "model_name": "ECUAgent"
 }
 ```
 
 ### Step 3: Reload & Predict
 
-Click **POST /reload** → Execute (refreshes the active model)
+**POST /reload** - Load registered model
 
-Click **POST /predict** → Enter your query → Execute
+**POST /predict** - Query the model
 
-Example request body:
 ```json
 {
-  "query": "What is ECU-850b",
+  "query": "What is ECU-850b max temperature?",
   "session_id": "default"
 }
 ```
 
+## What Gets Optimized
+
+| Parameter | What It Does | Range |
+|-----------|--------------|-------|
+| `chunk_size` | Max chars per chunk | 1000-2000 |
+| `chunk_overlap` | Overlap between chunks | 50-300 |
+| `default_top_k` | Documents per query | 3-7 |
+| `generic_top_k` | Docs for generic queries | 3-7 |
+
 ## Project Structure
 
-- `/src` - Core logic and MLflow model wrappers
-- `/data` - Technical manuals and test questions
-- `/experiments` - MLflow runs and artifacts storage
-- `/docker` - Docker configurations
+```
+├── src/
+│   ├── mlflow_model.py         # MLflow wrapper
+│   ├── run_experiment.py       # Training script
+│   └── register_best_model.py  # Registration script
+├── api/main.py                 # FastAPI endpoints
+├── data/
+│   ├── *.md                    # ECU docs
+│   └── test-questions.csv      # Test dataset
+└── experiments/                # MLflow artifacts
+```
+
+## Testing & Validation
+
+**Evaluation Dataset**: `test-questions.csv`
+- Covers single model, comparison, and spec comparison queries
+- Includes expected answers and criteria
+
+**Metrics**:
+- Pass Rate: % of correct answers
+- Avg Response Time: Latency per query
+
+**Validation Flow**:
+1. Train runs automated eval on all test cases
+2. Best model selected by pass rate
+3. Register to production
+4. Monitor via MLflow UI
+
+## Deployment
+
+**Local Development**:
+```bash
+docker compose up --build
+```
+
+**Production**:
+- Use registered model from MLflow registry
+- Load via `mlflow.pyfunc.load_model('models:/ECUAgent/latest')`
+- Deploy FastAPI service with model artifacts
+
+## Limitations & Future Work
+
+**Current Limitations**:
+- Fixed embedding model (sentence-transformers/all-MiniLM-L6-v2)
+- Manual test dataset curation required
+- No real-time model updates
+
+**Planned Improvements**:
+- [ ] A/B testing framework for models
+- [ ] Automatic test case generation
+- [ ] Fine-tuned domain embeddings
+- [ ] Multi-language support
+- [ ] Streaming responses
