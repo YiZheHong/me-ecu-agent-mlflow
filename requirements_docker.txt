@@ -1,0 +1,9 @@
+# Core MLflow
+mlflow>=2.9.0
+
+# MLflow serving dependencies
+gunicorn
+flask
+
+# me-ecu-agent
+me-ecu-agent @ git+https://github.com/YiZheHong/me-ecu-agent.git@main

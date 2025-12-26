@@ -1,0 +1,97 @@
+# =====================
+# Python bytecode
+# =====================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# =====================
+# Virtual environments
+# =====================
+.venv/
+venv/
+env/
+ENV/
+
+# Conda
+conda-meta/
+*.conda
+
+# =====================
+# Environment variables
+# =====================
+.env
+.env.*
+!.env.example
+
+# =====================
+# Logs & temp files
+# =====================
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# =====================
+# Test / coverage
+# =====================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# =====================
+# Build / packaging
+# =====================
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# =====================
+# Jupyter
+# =====================
+.ipynb_checkpoints/
+
+# =====================
+# IDE / Editor
+# =====================
+.vscode/
+.idea/
+*.iml
+
+# =====================
+# OS files
+# =====================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =====================
+# FAISS / Vector DB artifacts
+# =====================
+*.faiss
+*.index
+*.pkl
+vectorstore/
+faiss_index/
+
+# =====================
+# Local data / caches
+# =====================
+cache/
+.tmp/
+.env
+
+# =====================
+# ML artifacts
+# =====================
+mlruns*/
+scanner.py
+data/
+mlartifacts/
+model_export/

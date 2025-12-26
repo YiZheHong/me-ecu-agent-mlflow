@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  ecu-agent-mlflow:
+    build: .
+    image: ecu-agent-mlflow:latest
+    container_name: ecu-agent-mlflow
+    ports:
+      - "8080:8080"
+    environment:
+      # Set your API key here or use .env file
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - DEEPSEEK_API_BASE=${DEEPSEEK_API_BASE:-https://api.deepseek.com}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+# Optional: If you want to persist logs
+volumes:
+  logs:
