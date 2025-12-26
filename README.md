@@ -1,5 +1,7 @@
 # ECU Agent MLflow Management System
 
+> Built on top of [me-ecu-agent](https://github.com/YiZheHong/me-ecu-agent)
+
 An integrated RAG (Retrieval-Augmented Generation) lifecycle management system for ECU (Electronic Control Unit) documentation. Uses MLflow for experiment tracking and FastAPI for training, registering, and serving models.
 
 ## Quick Start
