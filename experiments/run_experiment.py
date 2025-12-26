@@ -50,7 +50,7 @@ PARAM_GRID = {
     "chunk_size": [1500],
     "chunk_overlap": [100],
     "default_top_k": [5],
-    "generic_top_k": [5],
+    "generic_top_k": [3, 5],
 }
 
 # Fixed parameters (not varied in experiments)

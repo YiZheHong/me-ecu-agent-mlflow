@@ -4,6 +4,7 @@ mlflow>=2.9.0
 # MLflow serving dependencies
 gunicorn
 flask
+fastapi
 
 # me-ecu-agent
 me-ecu-agent @ git+https://github.com/YiZheHong/me-ecu-agent.git@main

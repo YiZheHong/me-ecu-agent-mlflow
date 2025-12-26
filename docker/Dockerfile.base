@@ -1,0 +1,39 @@
+# Use Python 3.13 slim as base image [cite: 5]
+FROM python:3.13-slim
+
+# Install system dependencies [cite: 5]
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory [cite: 5]
+WORKDIR /app
+
+# Copy dependency file from the docker folder
+COPY docker/requirements_docker.txt .
+
+# Install Python dependencies [cite: 6]
+# Note: MLflow >= 3.5.0 is required for the new security middleware
+RUN pip install --no-cache-dir -r requirements_docker.txt
+
+# Copy project files from root
+COPY . .
+
+# Install the project in editable mode [cite: 6]
+RUN pip install -e .
+
+# Create necessary directories for persistence and experiments [cite: 7]
+RUN mkdir -p /app/mlruns \
+    /app/model_cache \
+    /app/experiments/rag \
+    /app/experiments/meta \
+    /app/experiments/summary \
+    /app/data
+
+# Expose ports for MLflow UI (5000) and API (8000)
+EXPOSE 5000
+EXPOSE 8000
+
+ENV PYTHONUNBUFFERED=1

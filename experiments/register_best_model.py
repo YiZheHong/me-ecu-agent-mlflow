@@ -44,6 +44,7 @@ EXPERIMENT_NAME = "ECU-Agent-Optimization"
 EXPERIMENTS_DIR = PROJECT_ROOT / "experiments"
 EXPERIMENTS_DIR.mkdir(exist_ok=True)
 (EXPERIMENTS_DIR / "mlartifacts").mkdir(exist_ok=True)
+(EXPERIMENTS_DIR / "summary").mkdir(exist_ok=True)
 (EXPERIMENTS_DIR / "rag").mkdir(exist_ok=True)
 (EXPERIMENTS_DIR / "meta").mkdir(exist_ok=True)
 

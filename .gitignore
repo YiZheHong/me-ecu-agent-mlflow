@@ -92,6 +92,5 @@ cache/
 # =====================
 mlruns*/
 scanner.py
-data/
 mlartifacts/
 model_export/

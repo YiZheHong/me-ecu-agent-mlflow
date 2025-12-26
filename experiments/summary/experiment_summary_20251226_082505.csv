@@ -1,2 +1,0 @@
-run_id,run_name,chunk_size,chunk_overlap,default_top_k,generic_top_k,pass_rate,total_queries,passed,failed,total_eval_time,avg_time_per_query
-7b9b79e03ebd4cf4b0493d5bae6bf723,chunk_size=1500_chunk_overlap=100_default_top_k=5_generic_top_k=5,1500,100,5,5,0.0,10,0,10,1.9807806015014648,0.19807806015014648

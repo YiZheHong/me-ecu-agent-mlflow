@@ -1,0 +1,62 @@
+# Note: 'version' is obsolete in modern Docker Compose, you can safely remove it
+services:
+  # Training container: handles experiments and MLflow UI
+  mlflow-train:
+    build:
+      context: .. # Points to the project root
+      dockerfile: docker/Dockerfile.base
+    image: ecu-agent-app:latest # Name for the shared image
+    container_name: ecu-agent-train
+    ports:
+      - "5000:5000"
+    volumes:
+      - ../mlruns:/app/mlruns
+      - ../mlflow.db:/app/mlflow.db
+      - ../experiments:/app/experiments
+      - ../src:/app/src
+      - ../data:/app/data
+    env_file:
+      - ../.env # Explicitly load the .env file from root
+    environment:
+      - MLFLOW_TRACKING_URI=http://localhost:5000
+      - MLFLOW_SERVER_ALLOWED_HOSTS=*
+      - MLFLOW_SERVER_CORS_ALLOWED_ORIGINS=*
+    networks:
+      - ecu-network
+    command: >
+      mlflow server 
+      --backend-store-uri sqlite:///app/mlflow.db 
+      --default-artifact-root /app/mlruns 
+      --host 0.0.0.0 
+      --port 5000 
+      --serve-artifacts
+
+  # Serving container: depends on the image built by mlflow-train
+  ecu-serve:
+    image: ecu-agent-app:latest
+    container_name: ecu-agent-serve
+    # Important: ensures it doesn't try to pull from Docker Hub
+    pull_policy: never 
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../model_cache:/app/model_cache
+      - ../mlruns:/app/mlruns
+      - ../mlflow.db:/app/mlflow.db
+      - ../main.py:/app/main.py
+    env_file:
+      - ../.env
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow-train:5000
+      - MODEL_NAME=ECUAgent
+      - MODEL_VERSION=latest
+    networks:
+      - ecu-network
+    depends_on:
+      mlflow-train:
+        condition: service_started
+    command: ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+networks:
+  ecu-network:
+    driver: bridge
