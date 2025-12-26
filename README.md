@@ -77,20 +77,6 @@ Returns run IDs with pass rates:
 | `default_top_k` | Documents per query | 3-7 |
 | `generic_top_k` | Docs for generic queries | 3-7 |
 
-## Project Structure
-
-```
-├── src/
-│   ├── mlflow_model.py         # MLflow wrapper
-│   ├── run_experiment.py       # Training script
-│   └── register_best_model.py  # Registration script
-├── api/main.py                 # FastAPI endpoints
-├── data/
-│   ├── *.md                    # ECU docs
-│   └── test-questions.csv      # Test dataset
-└── experiments/                # MLflow artifacts
-```
-
 ## Testing & Validation
 
 **Evaluation Dataset**: `test-questions.csv`
