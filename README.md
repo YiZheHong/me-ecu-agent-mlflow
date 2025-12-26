@@ -1,65 +1,67 @@
-ECU Agent MLflow Management System
-This project provides an integrated RAG (Retrieval-Augmented Generation) lifecycle management system for ECU (Electronic Control Unit) documentation. It uses MLflow for experiment tracking and FastAPI for training, registering, and serving models.
+# ECU Agent MLflow Management System
 
-🚀 Quick Start with Docker
-Assuming you have already cloned the repository and installed Docker/Docker Compose.
+An integrated RAG (Retrieval-Augmented Generation) lifecycle management system for ECU (Electronic Control Unit) documentation. Uses MLflow for experiment tracking and FastAPI for training, registering, and serving models.
 
-1. Environment Setup
-Create a .env file in the root directory and add your API keys:
+## Quick Start
 
-Code snippet
+### 1. Setup Environment
 
+Create a `.env` file in the root directory:
+
+```env
 DEEPSEEK_API_KEY=your_api_key_here
 DEEPSEEK_API_BASE=https://api.deepseek.com
-2. Launch the Services
-Run the following command from the project root:
+```
 
-Bash
+### 2. Launch Services
 
+```bash
 docker compose -f docker/docker-compose.yml up --build
-This will start two services:
+```
 
-MLflow UI: http://localhost:5000
+**Services:**
+- MLflow UI: http://localhost:5000
+- API Service: http://localhost:8000
 
-API Service: http://localhost:8000 (Handles Train/Register/Predict)
+## Usage
 
-🛠️ Workflow Lifecycle
-You can manage the model entirely through the API. Use the Swagger UI at http://localhost:8000/docs or the following commands:
+Access the Swagger UI at http://localhost:8000/docs
 
-Step 1: Run Grid Search Training
-Trigger the optimization experiment to find the best RAG parameters.
+### Step 1: Train Model
 
-Bash
+Click **POST /train** → Execute
 
-curl -X POST http://localhost:8000/train
-Response: A list of run_ids with their corresponding pass_rate.
+This runs grid search to find optimal RAG parameters. Returns run IDs with their pass rates.
 
-Step 2: Register the Best Model
-Pick a run_id from the training results and register it to the production registry.
+### Step 2: Register Best Model
 
-Bash
+Click **POST /register** → Enter the best `run_id` from training → Execute
 
-curl -X POST http://localhost:8000/register \
-     -H "Content-Type: application/json" \
-     -d '{"run_id": "YOUR_BEST_RUN_ID"}'
-Step 3: Reload & Predict
-Refresh the active model instance and start asking questions.
+Example request body:
+```json
+{
+  "run_id": "3b2a80bc62894e72aca80dcc49f3acac",
+  "model_name": "ECUAgent"
+}
+```
 
-Bash
+### Step 3: Reload & Predict
 
-# Reload the service to use the newly registered model
-curl -X POST http://localhost:8000/reload
+Click **POST /reload** → Execute (refreshes the active model)
 
-# Perform inference
-curl -X POST http://localhost:8000/predict \
-     -H "Content-Type: application/json" \
-     -d '{"query": "Which ECU model is robust in harsh environments?"}'
+Click **POST /predict** → Enter your query → Execute
 
-📁 Project Structure
-/src: Core logic and MLflow model wrappers.
+Example request body:
+```json
+{
+  "query": "What is ECU-850b",
+  "session_id": "default"
+}
+```
 
-/data: Technical manuals and test questions.
+## Project Structure
 
-/experiments: Local storage for MLflow runs and artifacts.
-
-/docker: Dockerfile and Compose configurations.
+- `/src` - Core logic and MLflow model wrappers
+- `/data` - Technical manuals and test questions
+- `/experiments` - MLflow runs and artifacts storage
+- `/docker` - Docker configurations
