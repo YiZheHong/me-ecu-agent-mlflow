@@ -77,6 +77,8 @@ desktop.ini
 *.faiss
 *.index
 *.pkl
+*.sqlite
+*.db
 vectorstore/
 faiss_index/
 
