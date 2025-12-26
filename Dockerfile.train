@@ -1,0 +1,53 @@
+FROM python:3.10-slim
+
+# 安装系统依赖
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# 设置工作目录
+WORKDIR /app
+
+# 复制依赖文件
+COPY requirements_docker.txt .
+
+# 安装Python依赖
+RUN pip install -r requirements_docker.txt
+
+# 复制项目文件
+COPY . .
+
+# 如果使用本地安装，取消下面的注释
+RUN pip install -e .
+
+# 创建必要的目录
+RUN mkdir -p /app/mlruns \
+    /app/experiments/rag \
+    /app/experiments/meta \
+    /app/experiments/summary \
+    /app/data
+
+# 暴露MLflow UI端口
+EXPOSE 5000
+
+# 设置环境变量
+ENV MLFLOW_TRACKING_URI=http://localhost:5000
+ENV PYTHONUNBUFFERED=1
+ENV MLFLOW_HOST=0.0.0.0
+
+# 启动脚本：先启动MLflow服务器（后台），然后保持容器运行
+CMD mlflow server \
+    --backend-store-uri sqlite:///app/mlflow.db \
+    --default-artifact-root /app/mlruns \
+    --host 0.0.0.0 \
+    --port 5000 \
+    --serve-artifacts & \
+    echo "Waiting for MLflow server to start..." && \
+    sleep 5 && \
+    echo "MLflow UI available at http://localhost:5000" && \
+    echo "Training container ready. Run experiments manually:" && \
+    echo "  docker exec -it <container-name> python experiments/run_experiment.py" && \
+    echo "  docker exec -it <container-name> python experiments/register_best_model.py --run-id <run_id>" && \
+    tail -f /dev/null

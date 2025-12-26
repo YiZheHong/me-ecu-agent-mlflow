@@ -27,6 +27,7 @@ import pandas as pd
 import tempfile
 from pathlib import Path
 from typing import Dict
+import os
 
 from me_ecu_agent.ingest import ingest, IngestConfig
 from me_ecu_agent.query import QueryFactory
@@ -37,7 +38,7 @@ PROJECT_ROOT = Path(__file__).parent.parent.resolve()
 # ============================================================
 # Configuration
 # ============================================================
-MLFLOW_TRACKING_URI = "http://localhost:5000"
+MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "file:///app/mlruns")
 EXPERIMENT_NAME = "ECU-Agent-Optimization"
 # Create experiments directory structure if needed
 EXPERIMENTS_DIR = PROJECT_ROOT / "experiments"

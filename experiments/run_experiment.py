@@ -40,7 +40,7 @@ mlflow.langchain.autolog()
 # CONFIGURATION
 # ============================================================
 LOG_LEVEL = "INFO"
-MLFLOW_TRACKING_URI = "http://localhost:5000" 
+MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "file:///app/mlruns")
 EXPERIMENT_NAME = "ECU-Agent-Optimization"
 TEST_QUESTIONS_CSV = "test-questions.csv"
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
